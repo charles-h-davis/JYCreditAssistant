@@ -10,6 +10,7 @@ __pycache__/
 htmlcov/
 
 # --- Environment / secrets ---
+backend/.env
 .env
 .env.*
 !.env.example
@@ -33,3 +34,5 @@ Thumbs.db
 
 # --- Local scratch ---
 *.log
+
+test_image.jpg

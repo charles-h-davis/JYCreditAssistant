@@ -2,30 +2,85 @@
 
 **Owner:** _fill in_ (see `.clinerules/00-project-overview.md`)
 
+Answers "what will this purchase really cost me?" in two steps: read a product name
+and price out of a photo, then show how the purchase changes the payoff of an
+existing card balance at the user's current monthly payment — with a slider of
+adjusted payments.
+
 ## Endpoints (`/api/v1/cost-to-buy`)
 
 | Method | Path | Status |
 | --- | --- | --- |
 | GET | `/ping` | implemented |
-| POST | `/estimate` | **stub → 501** |
+| POST | `/extract` | implemented (Gemini vision, multipart image) |
+| POST | `/estimate` | implemented (single-balance amortisation, stateless) |
+| POST | `/purchase-impact` | implemented (extra cost of a purchase, stateless) |
+| GET | `/purchase-plans?user_id=` | implemented (DB) |
+| POST | `/purchase-plans` | implemented (confirm: store plan + set payment) |
+| GET | `/monthly-payment?user_id=&card_id=` | implemented (DB) |
+| PUT | `/monthly-payment` | implemented (DB, upsert) |
 
-## Supabase
+`user_id` is the Supabase auth user UUID. It is a temporary stand-in for a JWT
+dependency (the API has no auth yet); the router injects the service-role client
+and every repository query filters on `user_id`.
 
-Table: `purchase_plans` — suggested columns: `id` (uuid pk), `user_id` (uuid, fk →
-`auth.users`), `label`, `purchase_amount` (numeric), `apr` (numeric),
-`monthly_payment` (numeric), `months_to_payoff` (int), `total_interest` (numeric),
-`created_at`.
+## Modelling
 
-RLS: `user_id = auth.uid()` on every operation.
+- Money is GBP; APR is a percent (`24.99` = 24.99%).
+- The billing cycle is anchored on **`closing_day`** (the statement-close day): at
+  each close the outstanding balance is multiplied by `APR/12` and the interest is
+  added.
+- The monthly payment is applied on **`statement_day`** (the due day); the payoff
+  date is the due date on which the balance reaches zero.
+- There is **no grace period**: a carried balance accrues interest every cycle,
+  including the cycle the new purchase is added in.
+- The headline number is `extra_total_paid` — total currency paid *with* the
+  purchase minus *without* it (this is the item price plus the extra interest). The
+  response also reports `extra_interest` and `extra_months`, plus a `scenarios`
+  ladder the "adjust your payment" screen can render.
+- The maths lives in `service.py` as pure functions so it is unit-testable without a
+  database.
 
-## Notes
+## Environment (`backend/.env`, gitignored — see `.env.example`)
 
-The estimate maths is pure and should stay in `service.py` so it can be unit tested
-without a database. Percentages are percents: `24.99` means 24.99%.
+```
+GEMINI_API_KEY=          # https://aistudio.google.com/apikey
+GEMINI_MODEL=gemini-3.5-flash-lite
+```
+
+`POST /extract` returns **503 `gemini_not_configured`** when the key is missing.
+
+## Database
+
+Run [`schema.sql`](./schema.sql) once in the Supabase SQL editor **after** the
+card-storage schema (both tables reference `public.credit_cards`). It creates:
+
+- `purchase_plans` — `id`, `user_id`, `card_id`, `product_name`, `purchase_amount`,
+  `currency`, `monthly_payment`, `months_to_payoff`, `total_interest`, `created_at`.
+- `card_payment_settings` — `id`, `user_id`, `card_id`, `monthly_payment`,
+  `created_at`, `updated_at`, `unique(user_id, card_id)`.
+
+RLS is `user_id = auth.uid()` on both; the backend bypasses it with the service role
+until auth exists but still filters on `user_id`.
+
+**Confirm-purchase flow:** `POST /purchase-plans` inserts the plan *and* upserts
+`card_payment_settings.monthly_payment` in one call, so the card's current payment
+becomes the value the user confirmed on the "adjust payment" screen.
+
+## Rules
+
+- `card_storage` owns the cards; read card data through that section, never by
+  querying `credit_cards` from here.
+- Reject full card numbers / CVV / expiry. The extraction prompt tells the model to
+  ignore payment credentials.
+- PDFs/other files: only `image/png|jpeg|webp|heic|heif` are accepted (415), capped
+  at 10 MB (413).
 
 ## TODOs
 
-- [ ] Implement `service.estimate_purchase_cost` (monthly amortisation, apr = 0 safe).
-- [ ] Wire `POST /estimate` to the service.
-- [ ] Create the `purchase_plans` table + RLS, then implement `repository`.
-- [ ] Add save/list endpoints for plans once the calculator works.
+- [ ] Replace `user_id` query/body parameters with the Supabase JWT subject and
+      switch to the anon client + RLS.
+- [ ] Read `current_balance` / `purchase_apr` / `closing_day` from `credit_cards`
+      (via card-storage) instead of taking them in the request body.
+- [ ] Add delete/list-per-card endpoints if the UI needs them.
+"""

@@ -47,6 +47,12 @@ class Settings(BaseSettings):
     # Optional: reuse an existing sandbox Item instead of creating one per sync.
     plaid_access_token: str = ""
 
+    # --- Cost to Buy section (Gemini vision for price extraction) ---
+    # Key from https://aistudio.google.com/apikey. Used to read a product name and
+    # price out of a photo of a price tag or a product screenshot.
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-3.5-flash-lite"
+
     @property
     def cors_origin_list(self) -> list[str]:
         """Allowed browser origins, parsed from the comma-separated setting."""
