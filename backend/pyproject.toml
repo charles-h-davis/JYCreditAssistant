@@ -1,0 +1,31 @@
+# Tooling configuration only — dependencies live in requirements*.txt.
+
+[tool.pytest.ini_options]
+# Make `app` importable when pytest runs from `backend/`.
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+# Keep in sync with the interpreter used for the backend venv.
+target-version = "py312"
+line-length = 100
+src = ["app", "tests"]
+exclude = [".venv", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI's dependency injection uses `Depends(...)` in argument defaults by design.
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.Query",
+    "fastapi.Path",
+    "fastapi.Body",
+    "fastapi.Header",
+]
+
