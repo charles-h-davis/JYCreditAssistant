@@ -35,6 +35,18 @@ class Settings(BaseSettings):
     # --- AI Credit Assistant section ---
     openai_api_key: str = ""
 
+    # --- Card Storage section (Plaid) ---
+    # Sandbox keys come from https://dashboard.plaid.com/team/keys.
+    plaid_client_id: str = ""
+    plaid_secret: str = ""
+    # "sandbox" or "production"; the section only talks to sandbox for now.
+    plaid_env: str = "sandbox"
+    # Sandbox institution used when no access token is supplied. `ins_56` (Chase)
+    # ships a credit card account with liabilities + transactions in Sandbox.
+    plaid_sandbox_institution_id: str = "ins_56"
+    # Optional: reuse an existing sandbox Item instead of creating one per sync.
+    plaid_access_token: str = ""
+
     @property
     def cors_origin_list(self) -> list[str]:
         """Allowed browser origins, parsed from the comma-separated setting."""
@@ -43,6 +55,13 @@ class Settings(BaseSettings):
     @property
     def is_development(self) -> bool:
         return self.app_env.strip().lower() in {"dev", "development", "local"}
+
+    @property
+    def plaid_base_url(self) -> str:
+        """Plaid API host for the configured environment."""
+        if self.plaid_env.strip().lower() == "production":
+            return "https://production.plaid.com"
+        return "https://sandbox.plaid.com"
 
 
 @lru_cache(maxsize=1)
