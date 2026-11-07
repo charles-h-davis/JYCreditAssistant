@@ -149,8 +149,9 @@ class FakePlaidClient:
 
 
 @pytest.fixture(autouse=True)
-def offline_dependencies() -> Iterator[None]:
-    """Keep the endpoint tests offline: fake DB client and fake Plaid client."""
+def offline_dependencies(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Keep the endpoint tests offline and independent of local .env values."""
+    monkeypatch.setattr(settings, "plaid_access_token", "")
     app.dependency_overrides[get_supabase_admin] = lambda: object()
     app.dependency_overrides[get_plaid_client] = lambda: FakePlaidClient()
     yield
