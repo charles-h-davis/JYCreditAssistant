@@ -21,7 +21,7 @@ export function IconButton({
   ...rest
 }: IconButtonProps) {
   const toneClass =
-    tone === "ink" ? "bg-ink text-white" : "bg-surface-strong text-ink";
+    tone === "ink" ? "bg-strong text-white" : "bg-surface-strong text-ink";
   return (
     <button
       type="button"
@@ -77,7 +77,7 @@ export function ErrorNote({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-2xl bg-[#fdecea] px-4 py-3 text-sm text-danger">
+    <div className="flex items-start gap-3 rounded-2xl bg-danger-soft px-4 py-3 text-sm text-danger">
       <span className="mt-0.5 shrink-0" aria-hidden>
         !
       </span>
@@ -131,7 +131,7 @@ export function Sheet({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.18 }}
-        className="absolute inset-0 bg-ink/25 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-scrim backdrop-blur-[2px]"
       />
       <motion.div
         role="dialog"
@@ -146,7 +146,7 @@ export function Sheet({
         onDragEnd={(_event: unknown, info: PanInfoLike) => {
           if (info.offset.y > 110 || info.velocity.y > 600) onClose();
         }}
-        className="relative z-10 w-full max-w-[430px] rounded-t-[26px] bg-white px-5 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-lift"
+        className="relative z-10 w-full max-w-[430px] rounded-t-[26px] bg-elevated px-5 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-lift"
       >
         <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-surface-strong" />
         {children}
@@ -178,7 +178,7 @@ export function Segmented<T extends string>({
             aria-selected={active}
             onClick={() => onChange(option.value)}
             className={`flex-1 rounded-xl py-2.5 text-sm font-medium transition ${
-              active ? "bg-white text-ink shadow-soft" : "text-muted"
+              active ? "bg-elevated text-ink shadow-soft" : "text-muted"
             }`}
           >
             {option.label}

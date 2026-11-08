@@ -61,7 +61,7 @@ export default function SignInPage() {
   return (
     <main className="app-column flex min-h-dvh flex-col bg-page px-6 pt-[max(3rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))]">
       <div className="flex items-center gap-3">
-        <span className="grid size-12 place-items-center rounded-2xl bg-ink text-lg font-semibold text-white">
+        <span className="grid size-12 place-items-center rounded-2xl bg-strong text-lg font-semibold text-white">
           CM
         </span>
         <div>

@@ -160,7 +160,7 @@ function Chip({
       onClick={onClick}
       aria-pressed={active}
       className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm whitespace-nowrap transition ${
-        active ? "bg-ink text-white" : "bg-surface-strong/70 text-ink-soft"
+        active ? "bg-strong text-white" : "bg-surface-strong/70 text-ink-soft"
       }`}
     >
       {children}

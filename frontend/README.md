@@ -79,8 +79,24 @@ prompt.txt     the product brief
 
 ## Design notes
 
-- Light mode only: pale blue-grey surfaces (`--color-surface`), near-black navy ink,
-  indigo data accent. Tokens live in `src/app/globals.css` (`@theme`, Tailwind v4).
+- **Colour schemes:** Light (default blue-grey), Dark and Cream — dark ink on warm
+  paper — plus four accents (Indigo, Ocean, Rose, Amber), picked on **Your Account →
+  Appearance** with a palette icon. Every colour is a CSS variable in
+  `src/app/globals.css`: `@theme` holds Light, `[data-theme="dark"|"cream"]` blocks
+  swap the palette and `[data-accent="…"]` blocks swap the accent, so a token-based
+  class like `bg-surface` re-themes everywhere without touching a component.
+  `<html>` carries `data-theme` / `data-accent`; `lib/state/theme.tsx` keeps them in
+  localStorage (external store, so no hydration mismatch) and an inline script in
+  `app/layout.tsx` applies the stored scheme **before first paint** — no flash.
+  Semantic tokens keep the hardcoded colours honest: `elevated` (was `bg-white`),
+  `strong` (filled chips/primary button), `danger-soft`, `scrim`, `grid`,
+  `chart-label`. Charts and the activity rings read `var(--color-…)`, never literals.
+- **Read aloud:** lessons and refresh rounds get a speaker button beside the exit X
+  (`lib/use-speech.ts`, the browser's `speechSynthesis`, en-GB voice preferred). One
+  press reads the summary, or the question plus its options; a second press pauses,
+  a third resumes. If audio is on when the learner answers, the verdict and its
+  explanation are read too. Speech stops on every question/phase change, and the
+  button is hidden where the API isn't available.
 - One 430px column on desktop, full-bleed on a phone, with safe-area padding.
 - Five-item bottom nav on every screen; the current section is a soft-filled tile.
   There is **no "+" button** in the top bar — the nav's *Check Purchase* tab is the

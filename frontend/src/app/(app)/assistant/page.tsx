@@ -114,14 +114,14 @@ export default function AssistantPage() {
                 <div
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[0.95rem] leading-relaxed ${
                     message.role === "user"
-                      ? "bg-ink text-white"
+                      ? "bg-strong text-white"
                       : message.refused
                         ? "bg-surface-strong/70 text-muted italic"
                         : "bg-surface-strong/70 text-ink"
                   }`}
                 >
                   {message.role === "assistant" ? (
-                    <div className="[&_a]:underline [&_code]:rounded [&_code]:bg-white/60 [&_code]:px-1 [&_li]:ml-4 [&_li]:list-disc [&_p]:m-0 [&_p+p]:mt-2 [&_strong]:font-semibold">
+                    <div className="[&_a]:underline [&_code]:rounded [&_code]:bg-elevated/60 [&_code]:px-1 [&_li]:ml-4 [&_li]:list-disc [&_p]:m-0 [&_p+p]:mt-2 [&_strong]:font-semibold">
                       <ReactMarkdown>{message.text}</ReactMarkdown>
                     </div>
                   ) : (
@@ -182,7 +182,7 @@ export default function AssistantPage() {
             type="submit"
             disabled={busy || input.trim().length === 0}
             aria-label="Send question"
-            className="grid size-12 shrink-0 place-items-center rounded-2xl bg-ink text-white transition active:scale-95 disabled:opacity-40"
+            className="grid size-12 shrink-0 place-items-center rounded-2xl bg-strong text-white transition active:scale-95 disabled:opacity-40"
           >
             <SendHorizontal size={19} strokeWidth={2} aria-hidden />
           </button>

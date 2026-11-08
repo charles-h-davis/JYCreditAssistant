@@ -1,12 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Check, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, Pause, Play, Volume2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ErrorNote } from "@/components/ui/primitives";
 import { checkAnswer } from "@/lib/api/endpoints";
 import type { AnswerCheck, AttemptResult, Question } from "@/lib/api/types";
+import { useSpeech } from "@/lib/use-speech";
 
 type Phase = "summary" | "questions" | "result";
 
@@ -45,6 +46,38 @@ export function LessonRunner({
 
   const current = questions[index];
   const answered = Object.keys(answers).length;
+
+  const { available, state: speechState, speak, stop, toggle } = useSpeech();
+  /** The screen audio was started for, so its verdict can follow on the audio. */
+  const readingFor = useRef<string | null>(null);
+
+  const verdict = current ? feedback[current.id] : undefined;
+  const questionText = current
+    ? `Question ${index + 1} of ${questions.length}. ${current.prompt} ${current.options
+        .map((option, optionIndex) => `Option ${String.fromCharCode(65 + optionIndex)}: ${option}.`)
+        .join(" ")}`
+    : "";
+  const readText = phase === "questions" ? questionText : `${title}. ${summary}`;
+
+  // Moving on ends the audio: it must never talk over the next question.
+  useEffect(() => {
+    readingFor.current = null;
+    stop();
+  }, [phase, index, stop]);
+
+  // If the learner asked for audio here, read the verdict and its explanation too.
+  useEffect(() => {
+    if (!current || !verdict) return;
+    if (readingFor.current !== `questions:${current.id}`) return;
+    const explanation = verdict.explanation ? ` ${verdict.explanation}` : "";
+    speak(`${verdict.correct ? "Correct." : "Not quite."}${explanation}`);
+  }, [current, verdict, speak]);
+
+  /** One button: start reading, pause it, resume it. */
+  function readAloud() {
+    if (speechState === "idle") readingFor.current = `${phase}:${current?.id ?? ""}`;
+    toggle(readText);
+  }
 
   /** Record the pick, then ask the API for an instant verdict. */
   async function choose(question: Question, optionIndex: number) {
@@ -87,14 +120,41 @@ export function LessonRunner({
   return (
     <main className="app-column flex min-h-dvh flex-col bg-page px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={onExit}
-          aria-label="Exit lesson"
-          className="grid size-11 place-items-center rounded-full bg-surface-strong text-ink transition active:scale-95"
-        >
-          <X size={20} strokeWidth={2.2} aria-hidden />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onExit}
+            aria-label="Exit lesson"
+            className="grid size-11 place-items-center rounded-full bg-surface-strong text-ink transition active:scale-95"
+          >
+            <X size={20} strokeWidth={2.2} aria-hidden />
+          </button>
+
+          {available && phase !== "result" ? (
+            <button
+              type="button"
+              onClick={readAloud}
+              aria-label={
+                speechState === "speaking"
+                  ? "Pause reading"
+                  : speechState === "paused"
+                    ? "Resume reading"
+                    : "Read this page aloud"
+              }
+              aria-pressed={speechState !== "idle"}
+              className="grid size-11 place-items-center rounded-full bg-surface-strong text-ink transition active:scale-95"
+            >
+              {speechState === "speaking" ? (
+                <Pause size={20} strokeWidth={2.2} aria-hidden />
+              ) : speechState === "paused" ? (
+                <Play size={20} strokeWidth={2.2} aria-hidden />
+              ) : (
+                <Volume2 size={20} strokeWidth={2.2} aria-hidden />
+              )}
+            </button>
+          ) : null}
+        </div>
+
         <p className="text-xs text-muted">
           {phase === "questions"
             ? `${index + 1} of ${questions.length}`
@@ -107,7 +167,7 @@ export function LessonRunner({
       {phase === "questions" ? (
         <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-surface-strong">
           <div
-            className="h-full rounded-full bg-ink transition-all duration-300"
+            className="h-full rounded-full bg-strong transition-all duration-300"
             style={{ width: `${(answered / questions.length) * 100}%` }}
           />
         </div>
@@ -155,7 +215,7 @@ export function LessonRunner({
                 : showWrong
                   ? "bg-danger text-white"
                   : selected
-                    ? "bg-ink text-white"
+                    ? "bg-strong text-white"
                     : "bg-surface text-ink";
 
               return (
@@ -178,7 +238,7 @@ export function LessonRunner({
           {feedback[current.id] ? (
             <div
               className={`mt-3 rounded-2xl px-4 py-3 ${
-                feedback[current.id].correct ? "bg-positive/10" : "bg-[#fdecea]"
+                feedback[current.id].correct ? "bg-positive/10" : "bg-danger-soft"
               }`}
             >
               <p

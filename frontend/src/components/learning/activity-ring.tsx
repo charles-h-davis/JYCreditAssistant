@@ -27,7 +27,9 @@ export function ActivityRing({
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke={filled ? "#33445c" : "#d7e0ee"}
+            stroke={
+              filled ? "var(--color-ink-soft)" : "var(--color-surface-strong)"
+            }
             strokeWidth={stroke}
             strokeLinecap="round"
             strokeDasharray={`${segment} ${circumference - segment}`}

@@ -1,19 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { LogOut, Pencil } from "lucide-react";
+import { Check, LogOut, Palette, Pencil } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { TopBar } from "@/components/layout/top-bar";
 import { CardPanel } from "@/components/account/card-panel";
 import { Button } from "@/components/ui/button";
-import { ErrorNote, Skeleton } from "@/components/ui/primitives";
+import { ErrorNote, Segmented, Skeleton } from "@/components/ui/primitives";
 import { initials } from "@/lib/format";
 import { useCards } from "@/lib/state/cards";
 import { useSession } from "@/lib/state/session";
+import { THEME_ACCENTS, THEME_MODES, useTheme } from "@/lib/state/theme";
 
 export default function AccountPage() {
   const { displayName, email, signOut, updateDisplayName } = useSession();
   const { cards, isLoading } = useCards();
+  const { mode, accent, setMode, setAccent } = useTheme();
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState(displayName);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export default function AccountPage() {
       </h1>
 
       <section className="surface mt-4 flex items-center gap-3 p-4">
-        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-ink text-sm font-semibold text-white">
+        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-strong text-sm font-semibold text-white">
           {initials(displayName)}
         </span>
         <div className="min-w-0 flex-1">
@@ -81,6 +83,45 @@ export default function AccountPage() {
           <ErrorNote>{nameError}</ErrorNote>
         </div>
       ) : null}
+
+      <h2 className="mt-6 flex items-center gap-2 text-sm font-semibold tracking-wide text-muted uppercase">
+        <Palette size={15} strokeWidth={2} aria-hidden />
+        Appearance
+      </h2>
+
+      <section className="surface mt-2 p-4">
+        <p className="text-sm font-medium text-ink">Colour scheme</p>
+        <div className="mt-2">
+          <Segmented options={THEME_MODES} value={mode} onChange={setMode} />
+        </div>
+
+        <p className="mt-4 text-sm font-medium text-ink">Accent</p>
+        <div className="mt-2 flex items-center gap-3" role="radiogroup" aria-label="Accent colour">
+          {THEME_ACCENTS.map((option) => {
+            const active = accent === option.value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                aria-label={option.label}
+                title={option.label}
+                onClick={() => setAccent(option.value)}
+                className={`grid size-10 place-items-center rounded-full transition active:scale-95 ${
+                  active ? "ring-2 ring-ink ring-offset-2 ring-offset-surface" : ""
+                }`}
+                style={{ backgroundColor: option.swatch }}
+              >
+                {active ? (
+                  <Check size={15} strokeWidth={3} className="text-white" aria-hidden />
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-xs text-muted">Saved on this device.</p>
+      </section>
 
       <h2 className="mt-6 text-sm font-semibold tracking-wide text-muted uppercase">
         Card details

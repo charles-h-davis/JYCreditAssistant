@@ -97,7 +97,7 @@ export default function LearningPage() {
                     <ActivityRing completed={done} total={category.lessons.length} />
                     <span
                       className={`absolute grid size-[62px] place-items-center rounded-full transition-colors ${
-                        complete ? "bg-ink text-white" : "bg-white/70 text-ink-soft"
+                        complete ? "bg-strong text-white" : "bg-elevated/70 text-ink-soft"
                       }`}
                     >
                       {complete ? (
@@ -125,7 +125,7 @@ export default function LearningPage() {
             onClick={(event) => {
               if (!hasRecap) event.preventDefault();
             }}
-            className={`absolute right-4 bottom-4 grid size-14 place-items-center rounded-full bg-white text-ink shadow-soft transition active:scale-95 ${
+            className={`absolute right-4 bottom-4 grid size-14 place-items-center rounded-full bg-elevated text-ink shadow-soft transition active:scale-95 ${
               hasRecap ? "" : "opacity-40"
             }`}
           >
@@ -139,7 +139,7 @@ export default function LearningPage() {
         href="/friends-feed"
         className="surface mt-4 flex items-center gap-3 px-4 py-3.5 transition active:scale-[0.99]"
       >
-        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white/70 text-ink-soft">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-elevated/70 text-ink-soft">
           <Users size={20} strokeWidth={1.8} aria-hidden />
         </span>
         <span className="min-w-0 flex-1">

@@ -88,7 +88,7 @@ export function BarChart({
             x2={width - padding.right}
             y1={tick.y}
             y2={tick.y}
-            stroke="#dbe4f1"
+            stroke="var(--color-grid)"
             strokeWidth="1"
             strokeDasharray="2 4"
           />
@@ -97,7 +97,7 @@ export function BarChart({
             y={tick.y + 3.5}
             textAnchor="end"
             fontSize="9"
-            fill="#8798ae"
+            fill="var(--color-chart-label)"
           >
             {formatCompact(tick.value)}
           </text>
@@ -113,7 +113,7 @@ export function BarChart({
             width={model.barWidth}
             height={bar.height}
             rx={Math.min(3, model.barWidth / 2)}
-            fill={bar.positive ? "#4c5bd4" : "#1f8f6b"}
+            fill={bar.positive ? "var(--color-accent)" : "var(--color-positive)"}
             opacity={bar.positive ? 0.85 : 0.9}
           />
         ),
@@ -124,7 +124,7 @@ export function BarChart({
         x2={width - padding.right}
         y1={model.zeroY}
         y2={model.zeroY}
-        stroke="#c9d5ea"
+        stroke="var(--color-accent-soft)"
         strokeWidth="1"
       />
 
@@ -136,7 +136,7 @@ export function BarChart({
             y={height - padding.bottom + 15}
             textAnchor="middle"
             fontSize="9"
-            fill="#8798ae"
+            fill="var(--color-chart-label)"
           >
             {point.label}
           </text>

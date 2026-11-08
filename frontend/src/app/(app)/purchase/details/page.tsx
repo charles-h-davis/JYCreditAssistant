@@ -71,7 +71,7 @@ export default function PurchaseDetailsPage() {
         <label className="mt-5 text-[1.05rem] font-medium" htmlFor="product-price">
           Current Price
         </label>
-        <div className="mt-2 flex items-center gap-1 rounded-2xl border border-ink-soft bg-white px-4 py-3">
+        <div className="mt-2 flex items-center gap-1 rounded-2xl border border-ink-soft bg-elevated px-4 py-3">
           <span className="text-2xl text-muted">£</span>
           <input
             id="product-price"

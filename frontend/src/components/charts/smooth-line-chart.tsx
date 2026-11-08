@@ -123,8 +123,8 @@ export function SmoothLineChart({
     >
       <defs>
         <linearGradient id="chart-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4c5bd4" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#4c5bd4" stopOpacity="0" />
+          <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
         </linearGradient>
       </defs>
 
@@ -135,7 +135,7 @@ export function SmoothLineChart({
             x2={width - padding.right}
             y1={tick.y}
             y2={tick.y}
-            stroke="#dbe4f1"
+            stroke="var(--color-grid)"
             strokeWidth="1"
             strokeDasharray="2 4"
           />
@@ -144,7 +144,7 @@ export function SmoothLineChart({
             y={tick.y + 3.5}
             textAnchor="end"
             fontSize="9"
-            fill="#8798ae"
+            fill="var(--color-chart-label)"
           >
             {formatCompact(tick.value)}
           </text>
@@ -155,7 +155,7 @@ export function SmoothLineChart({
       <path
         d={model.path}
         fill="none"
-        stroke="#4c5bd4"
+        stroke="var(--color-accent)"
         strokeWidth="2.4"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -165,8 +165,8 @@ export function SmoothLineChart({
         cx={model.coords[model.coords.length - 1].x}
         cy={model.coords[model.coords.length - 1].y}
         r="3.4"
-        fill="#4c5bd4"
-        stroke="#fff"
+        fill="var(--color-accent)"
+        stroke="var(--color-elevated)"
         strokeWidth="2"
       />
 
@@ -179,7 +179,7 @@ export function SmoothLineChart({
                 y={baseline + 15}
                 textAnchor="middle"
                 fontSize="9"
-                fill="#8798ae"
+                fill="var(--color-chart-label)"
               >
                 {point.label}
               </text>

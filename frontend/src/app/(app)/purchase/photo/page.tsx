@@ -125,7 +125,7 @@ export default function PurchasePhotoPage() {
             <span className="text-sm">Tap to use the camera</span>
           </span>
         )}
-        <span className="absolute bottom-5 left-1/2 grid size-12 -translate-x-1/2 place-items-center rounded-full bg-white shadow-soft">
+        <span className="absolute bottom-5 left-1/2 grid size-12 -translate-x-1/2 place-items-center rounded-full bg-elevated shadow-soft">
           <span className="size-7 rounded-full bg-surface-strong" />
           <span className="sr-only">Take photo</span>
         </span>

@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Design tokens — light-mode, Revolut-adjacent, taken from frontend/design refs
+   Design tokens — taken from frontend/design refs.
    Pale blue-grey surfaces, near-black navy ink, indigo data accents.
+
+   The @theme block below is the "light" scheme. `[data-theme]` blocks further
+   down swap the whole palette (dark, cream) and `[data-accent]` blocks swap the
+   accent, so every token-based class — bg-surface, text-ink, border-accent — is
+   re-themed without touching a component.
 --------------------------------------------------------------------------- */
 @theme {
   --color-page: #f5f8fc;
@@ -13,9 +18,17 @@
   --color-ink-soft: #33445c;
   --color-muted: #6b7c93;
   --color-accent: #4c5bd4;
-  --color-accent-soft: #c9d5ea;
+  --color-accent-soft: color-mix(in srgb, var(--color-accent) 26%, var(--color-surface));
   --color-positive: #1f8f6b;
   --color-danger: #c2453f;
+
+  /* Semantic surfaces that used to be hardcoded white / ink. */
+  --color-elevated: #ffffff;
+  --color-strong: #0b1524;
+  --color-danger-soft: #fdecea;
+  --color-scrim: rgba(11, 21, 36, 0.25);
+  --color-grid: #dbe4f1;
+  --color-chart-label: #8798ae;
 
   --radius-card: 22px;
   --radius-tile: 18px;
@@ -24,6 +37,66 @@
 
   --shadow-soft: 0 10px 30px -18px rgba(11, 21, 36, 0.45);
   --shadow-lift: 0 18px 40px -22px rgba(11, 21, 36, 0.55);
+}
+
+/* --- base schemes ---------------------------------------------------------
+   Unlayered on purpose: these win over the @theme layer, so overriding a token
+   here re-themes every utility that references it.
+-------------------------------------------------------------------------- */
+[data-theme="dark"] {
+  --color-page: #0b1220;
+  --color-surface: #141d2e;
+  --color-surface-strong: #1e2a40;
+  --color-halo: #111a29;
+  --color-ink: #eef3fa;
+  --color-ink-soft: #b9c6da;
+  --color-muted: #8a9ab1;
+  --color-positive: #12996f;
+  --color-danger: #d65550;
+  --color-elevated: #1b2537;
+  --color-strong: #33415e;
+  --color-danger-soft: #3a2220;
+  --color-scrim: rgba(2, 6, 14, 0.55);
+  --color-grid: #24304a;
+  --color-chart-label: #93a4bd;
+  --shadow-soft: 0 10px 30px -18px rgba(0, 0, 0, 0.8);
+  --shadow-lift: 0 18px 40px -22px rgba(0, 0, 0, 0.9);
+}
+
+[data-theme="cream"] {
+  --color-page: #f7f0e3;
+  --color-surface: #efe5d2;
+  --color-surface-strong: #e4d6bd;
+  --color-halo: #f3ebdc;
+  --color-ink: #2b2115;
+  --color-ink-soft: #514027;
+  --color-muted: #85705a;
+  --color-positive: #1f7a58;
+  --color-danger: #b03a34;
+  --color-elevated: #fffaf0;
+  --color-strong: #2b2115;
+  --color-danger-soft: #f6e3dd;
+  --color-scrim: rgba(43, 33, 21, 0.25);
+  --color-grid: #e4d6bd;
+  --color-chart-label: #85705a;
+  --shadow-soft: 0 10px 30px -18px rgba(43, 33, 21, 0.35);
+  --shadow-lift: 0 18px 40px -22px rgba(43, 33, 21, 0.45);
+}
+
+/* --- accents --------------------------------------------------------------
+   `--color-accent-soft` is derived with color-mix, so it follows whichever base
+   surface is active as well as the accent itself.
+-------------------------------------------------------------------------- */
+[data-accent="ocean"] {
+  --color-accent: #0f7c8c;
+}
+
+[data-accent="rose"] {
+  --color-accent: #b83f7a;
+}
+
+[data-accent="amber"] {
+  --color-accent: #b26a12;
 }
 
 @layer base {
@@ -77,7 +150,7 @@
 
   .field {
     width: 100%;
-    background-color: #fff;
+    background-color: var(--color-elevated);
     border: 1px solid var(--color-ink-soft);
     border-radius: 16px;
     padding: 0.9rem 1rem;
@@ -105,7 +178,7 @@
   }
 
   .btn-primary {
-    background-color: var(--color-ink);
+    background-color: var(--color-strong);
     color: #fff;
   }
 
@@ -162,7 +235,7 @@
     height: 26px;
     margin-top: -11px;
     border-radius: 50%;
-    background: #8ea3c2;
+    background: var(--color-chart-label);
     border: none;
     box-shadow: 0 4px 10px -4px rgba(11, 21, 36, 0.6);
   }
@@ -177,7 +250,7 @@
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background: #8ea3c2;
+    background: var(--color-chart-label);
     border: none;
     box-shadow: 0 4px 10px -4px rgba(11, 21, 36, 0.6);
   }
