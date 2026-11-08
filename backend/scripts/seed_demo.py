@@ -1,9 +1,9 @@
 """Seed a realistic demo account so the frontend has something to show.
 
 Idempotent: every run resets *only the demo user's* rows (cards, transactions,
-purchase plans, payment settings, learning progress) and re-creates them, so the
-demo is reproducible right before a presentation.
-
+purchase plans, payment settings, learning progress, friends, friends-feed
+entries) and re-creates them, so the demo is reproducible right before a
+presentation.
 Run from `backend/` after both `schema.sql` files and the credit-learning seed:
 
     ..\\.venv\\Scripts\\python.exe scripts\\seed_demo.py
@@ -24,6 +24,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from supabase import Client  # noqa: E402
 
 from app.core.database import get_supabase_admin  # noqa: E402
+from app.sections.friends import seed as friends_seed  # noqa: E402
+from app.sections.friends_feed import seed as feed_seed  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -213,6 +215,8 @@ def _clear_demo_rows(client: Client, user_id: str) -> None:
         "learning_completions",
         "learning_attempts",
         "learning_streaks",
+        "friends",
+        "friends_feed_entries",
     ):
         try:
             client.table(table).delete().eq("user_id", user_id).execute()
@@ -403,6 +407,30 @@ def seed_purchase_plans(
     return len(rows)
 
 
+def seed_friends(client: Client, user_id: str) -> int:
+    """Load the demo friends (the people the feed talks about)."""
+    try:
+        return friends_seed.run(client, user_id)
+    except Exception as exc:  # noqa: BLE001 - the table may not exist yet
+        logger.warning(
+            "Skipped friends (%s): run app/sections/friends/schema.sql first.",
+            str(exc)[:80],
+        )
+        return 0
+
+
+def seed_friend_activity(client: Client, user_id: str) -> int:
+    """Generate a few days of activity for the demo friends (the feed's content)."""
+    try:
+        return feed_seed.run(client, user_id)
+    except Exception as exc:  # noqa: BLE001 - the table may not exist yet
+        logger.warning(
+            "Skipped friends feed (%s): run app/sections/friends_feed/schema.sql first.",
+            str(exc)[:80],
+        )
+        return 0
+
+
 def seed_learning(client: Client, user_id: str, today: date) -> dict[str, int]:
     """Complete the first few lessons and give the demo user an active streak."""
     categories = (
@@ -474,6 +502,8 @@ def run(client: Client | None = None) -> dict[str, int]:
     payments = seed_payment_settings(client, user_id, cards)
     plans = seed_purchase_plans(client, user_id, cards)
     learning = seed_learning(client, user_id, today)
+    friends = seed_friends(client, user_id)
+    friend_activity = seed_friend_activity(client, user_id)
 
     counts = {
         "cards": len(cards),
@@ -482,6 +512,8 @@ def run(client: Client | None = None) -> dict[str, int]:
         "purchase_plans": plans,
         "learning_completions": learning["completions"],
         "streak": learning["streak"],
+        "friends": friends,
+        "friend_activity": friend_activity,
     }
     logger.info("Demo account %s seeded: %s", DEMO_EMAIL, counts)
 

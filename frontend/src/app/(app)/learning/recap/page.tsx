@@ -5,7 +5,7 @@ import useSWR from "swr";
 import { LessonRunner } from "@/components/learning/lesson-runner";
 import { LoadingSplash } from "@/components/layout/app-shell";
 import { EmptyState } from "@/components/ui/primitives";
-import { getRecap, submitRecapAttempt } from "@/lib/api/endpoints";
+import { getRecap, recordFeedEntry, submitRecapAttempt } from "@/lib/api/endpoints";
 import { useSession } from "@/lib/state/session";
 
 /**
@@ -54,7 +54,21 @@ export default function RecapPage() {
       submitLabel="Start recap"
       questions={data.questions}
       onExit={() => router.push("/learning")}
-      onSubmit={(answers) => submitRecapAttempt(userId, answers)}
+      onSubmit={async (answers) => {
+        const result = await submitRecapAttempt(userId, answers);
+        try {
+          // Refresh rounds show up in the feed alongside finished lessons.
+          await recordFeedEntry({
+            user_id: userId,
+            kind: "recap",
+            score: result.score,
+            total: result.total,
+          });
+        } catch {
+          // Best effort — the graded result always wins.
+        }
+        return result;
+      }}
     />
   );
 }

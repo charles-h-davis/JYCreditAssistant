@@ -5,7 +5,7 @@ import useSWR from "swr";
 import { LessonRunner } from "@/components/learning/lesson-runner";
 import { LoadingSplash } from "@/components/layout/app-shell";
 import { EmptyState } from "@/components/ui/primitives";
-import { getLesson, submitLessonAttempt } from "@/lib/api/endpoints";
+import { getLesson, recordFeedEntry, submitLessonAttempt } from "@/lib/api/endpoints";
 import { useSession } from "@/lib/state/session";
 
 /** Full-screen lesson runner: summary -> five questions -> graded result. */
@@ -48,7 +48,22 @@ export default function LessonPage() {
       summary={data.summary}
       questions={data.questions}
       onExit={() => router.push("/learning")}
-      onSubmit={(answers) => submitLessonAttempt(slug, userId, answers)}
+      onSubmit={async (answers) => {
+        const result = await submitLessonAttempt(slug, userId, answers);
+        try {
+          // Finish the loop: the feed keeps a permanent row for this lesson.
+          await recordFeedEntry({
+            user_id: userId,
+            kind: "lesson",
+            lesson_title: data.title,
+            score: result.score,
+            total: result.total,
+          });
+        } catch {
+          // The feed is a nicety — never hide the graded result because of it.
+        }
+        return result;
+      }}
     />
   );
 }

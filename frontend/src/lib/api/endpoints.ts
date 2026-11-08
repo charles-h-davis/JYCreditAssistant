@@ -6,6 +6,11 @@ import type {
   ChatReply,
   CreditCard,
   ExtractResult,
+  FeedEntry,
+  FeedEntryCreate,
+  Friend,
+  FriendCreate,
+  FriendsFeed,
   LessonDetail,
   MonthlyPayment,
   PurchasePlan,
@@ -131,5 +136,35 @@ export function askAssistant(message: string): Promise<ChatReply> {
   return apiRequest<ChatReply>("/ai-assistant/chat", {
     method: "POST",
     json: { message },
+  });
+}
+
+/* --- friends --------------------------------------------------------------- */
+
+export function listFriends(userId: string): Promise<Friend[]> {
+  return apiRequest<Friend[]>(withUser("/friends", userId));
+}
+
+export function addFriend(payload: FriendCreate): Promise<Friend> {
+  return apiRequest<Friend>("/friends", { method: "POST", json: payload });
+}
+
+export function removeFriend(userId: string, friendId: string): Promise<void> {
+  return apiRequest<void>(withUser(`/friends/${friendId}`, userId), { method: "DELETE" });
+}
+
+/* --- friends feed ---------------------------------------------------------- */
+
+/** Latest feed entries: hardcoded friend activity plus the user's own completions. */
+export function getFriendsFeed(userId: string, limit?: number): Promise<FriendsFeed> {
+  const size = limit === undefined ? "" : `&limit=${limit}`;
+  return apiRequest<FriendsFeed>(`${withUser("/friends-feed/feed", userId)}${size}`);
+}
+
+/** Record a finished lesson or refresh round so it shows up in the feed. */
+export function recordFeedEntry(payload: FeedEntryCreate): Promise<FeedEntry> {
+  return apiRequest<FeedEntry>("/friends-feed/entries", {
+    method: "POST",
+    json: payload,
   });
 }

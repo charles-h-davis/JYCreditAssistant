@@ -164,3 +164,49 @@ export interface ChatReply {
   refused: boolean;
   model: string | null;
 }
+
+/* --- friends --------------------------------------------------------------- */
+
+/** One friend on the user's list (`GET /friends`). A contact, not an account. */
+export interface Friend {
+  id: string;
+  user_id: string;
+  friend_name: string;
+  friend_email: string;
+  created_at: string | null;
+}
+
+/** Body of `POST /friends` — `name` is optional, the API derives it from the email. */
+export interface FriendCreate {
+  user_id: string;
+  email: string;
+  name?: string;
+}
+
+/* --- friends feed ---------------------------------------------------------- */
+
+export type FeedKind = "lesson" | "recap" | "streak";
+
+/** One row of the friends feed (`GET /friends-feed/feed`). */
+export interface FeedEntry {
+  id: string;
+  actor: string;
+  kind: FeedKind;
+  action: string;
+  detail: string | null;
+  occurred_at: string;
+  is_self: boolean;
+}
+
+export interface FriendsFeed {
+  entries: FeedEntry[];
+}
+
+/** Body of `POST /friends-feed/entries`, sent once an attempt has been graded. */
+export interface FeedEntryCreate {
+  user_id: string;
+  kind: "lesson" | "recap";
+  lesson_title?: string | null;
+  score: number;
+  total: number;
+}

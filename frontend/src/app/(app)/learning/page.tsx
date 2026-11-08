@@ -6,10 +6,12 @@ import useSWR from "swr";
 import {
   Calculator,
   Check,
+  ChevronRight,
   CreditCard,
   GraduationCap,
   RefreshCw,
   Scale,
+  Users,
   Wallet,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
@@ -132,6 +134,22 @@ export default function LearningPage() {
           </Link>
         </div>
       )}
+
+      <Link
+        href="/friends-feed"
+        className="surface mt-4 flex items-center gap-3 px-4 py-3.5 transition active:scale-[0.99]"
+      >
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white/70 text-ink-soft">
+          <Users size={20} strokeWidth={1.8} aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-medium text-ink">Friends feed</span>
+          <span className="block text-xs text-muted">
+            See what everyone else is working through
+          </span>
+        </span>
+        <ChevronRight size={18} strokeWidth={2} aria-hidden className="shrink-0 text-ink-soft" />
+      </Link>
 
       <Sheet
         open={selected !== null}

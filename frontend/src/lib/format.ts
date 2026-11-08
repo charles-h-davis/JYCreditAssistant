@@ -85,6 +85,28 @@ export function formatMonth(value: string): string {
   return parseDate(`${value}-01`).toLocaleDateString(LOCALE, { month: "long" });
 }
 
+/** `just now`, `12m ago`, `3h ago`, `Yesterday`, `4d ago` — feed timestamps. */
+export function formatRelativeTime(value: string | null): string {
+  if (!value) return "";
+  const date = new Date(value);
+  const elapsedSeconds = Math.round((Date.now() - date.getTime()) / 1000);
+  if (!Number.isFinite(elapsedSeconds)) return "";
+
+  if (elapsedSeconds < 60) return "just now";
+
+  const minutes = Math.round(elapsedSeconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.round(hours / 24);
+  if (days === 1) return "Yesterday";
+  if (days < 7) return `${days}d ago`;
+
+  return formatShortDate(value.slice(0, 10));
+}
+
 /** Initials for the avatar: `Alex Morgan` -> `AM`. */
 export function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);

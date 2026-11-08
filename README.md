@@ -25,6 +25,7 @@ API, following the screens in `frontend/design refs/`.
 | Dashboard | `/dashboard` | card-storage, cost-to-buy, credit-learning |
 | Transactions | `/transactions` | card-storage |
 | Learning | `/learning` | credit-learning |
+| Friends feed | `/friends-feed` | friends-feed |
 | Lesson / refresh round | `/learning/lesson/[slug]`, `/learning/recap` | credit-learning |
 | Your Account | `/account` | card-storage, cost-to-buy |
 | Check a purchase → photo → details → total cost | `/purchase/**` | cost-to-buy |
@@ -36,6 +37,8 @@ API, following the screens in `frontend/design refs/`.
 | Credit Learning | `/api/v1/credit-learning` | _fill in_ |
 | Card Storage | `/api/v1/card-storage` | _fill in_ |
 | AI Credit Assistant | `/api/v1/ai-assistant` | _fill in_ |
+| Friends | `/api/v1/friends` | _fill in_ |
+| Friends Feed | `/api/v1/friends-feed` | _fill in_ |
 
 ## Get started
 
@@ -58,8 +61,9 @@ npm run dev                          # http://localhost:3000
 ```
 
 **Demo account:** `demo@demo.com` / `demo123!` — created and filled with cards,
-transactions, planned purchases and learning progress by
-`backend/scripts/seed_demo.py` (re-runnable; it resets only the demo user's rows).
+transactions, planned purchases, learning progress, friends and a few days of
+friend activity for the feed by `backend/scripts/seed_demo.py` (re-runnable; it
+resets only the demo user's rows).
 `backend/scripts/verify_demo.py` hits every endpoint the UI uses and prints a
 pass/fail line per call. See [`frontend/README.md`](frontend/README.md) for the
 one-time `cost_to_buy/schema.sql` step.

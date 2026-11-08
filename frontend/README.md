@@ -27,7 +27,10 @@ Demo login: `demo@demo.com` / `demo123!` (the sign-in screen has a one-tap butto
 > **One-time SQL:** the Cost to Buy tables must exist before monthly repayments and
 > planned purchases work. Run `backend/app/sections/cost_to_buy/schema.sql` in the
 > Supabase SQL editor. Until then those endpoints return PGRST205 and the UI shows
-> the API error.
+> the API error. The same applies to the social feature — run
+> `backend/app/sections/friends_feed/schema.sql` (feed) and
+> `backend/app/sections/friends/schema.sql` (friend list), then
+> `python -m app.sections.friends.seed` to load the demo friends.
 
 > **Turbopack:** this machine only has Turbopack's WASM bindings, so `dev`/`build`
 > pass `--webpack`. Drop the flag on a platform with native Turbopack support.
@@ -55,12 +58,14 @@ src/
       dashboard/                 balance, debt-free date, swipeable charts, streak
       transactions/              month pager, category filter, rows
       learning/                  five activity rings, lesson runner, recap
+      friends-feed/              friends feed (X returns to Learning)
       account/                   name, card details, monthly repayment, log out
       purchase/                  initial -> photo -> details -> total cost w/ slider
       assistant/                 "Ask Me Anything" chat
   components/
     layout/    AppShell, TopBar, BottomNav, CardSwitcher
     charts/    SmoothLineChart (hand-rolled SVG), ChartPager
+    feed/      FeedList — the friends feed rows
     ui/        Button, Sheet, StatTile, RangeSlider, skeletons, errors
   lib/
     api/       typed fetch client + endpoint wrappers mirroring the FastAPI schemas
