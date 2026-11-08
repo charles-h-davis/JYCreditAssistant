@@ -1,4 +1,4 @@
-# Runtime dependencies for the JY Credit Assistant backend.
+# Runtime dependencies for the CreditMate backend.
 # Install with: ..\.venv\Scripts\python.exe -m pip install -r requirements.txt
 
 fastapi>=0.115,<1.0

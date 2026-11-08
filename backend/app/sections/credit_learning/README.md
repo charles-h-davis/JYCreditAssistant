@@ -27,6 +27,7 @@ and loaded into Supabase by `seed.py`.
 | GET | `/roadmap?user_id=` | 5 categories → 3 lessons with completed/attempts/best score + streak |
 | GET | `/lessons` | flat catalogue with question counts |
 | GET | `/lessons/{slug}` | summary + 5 questions (**no correct answers**) |
+| POST | `/questions/{question_id}/answer` | grade one answer (instant feedback) |
 | POST | `/lessons/{slug}/attempt` | grade answers, mark completed, extend streak |
 | GET | `/progress?user_id=` | completed lessons with stats + streak |
 | GET | `/recap?user_id=` | 5 random questions from lessons the user completed |
@@ -36,6 +37,9 @@ Rules:
 
 - **Any** submitted lesson attempt completes the lesson — 100% is not required.
   Retakes are unlimited: attempts increment, `best_score` is kept.
+- **Instant feedback:** `POST /questions/{id}/answer` grades a single option so the
+  lesson runner can react on tap. The correct index and explanation are only
+  returned *after* the learner commits — lesson payloads still withhold them.
 - Streaks count consecutive **days** with a lesson **or recap** submission (UTC).
   A missed calendar day resets the visible streak to 0 (computed lazily); the
   next submission starts a new streak at 1.

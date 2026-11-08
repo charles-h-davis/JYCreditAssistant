@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     )
 
     # --- App ---
-    app_name: str = "JY Credit Assistant API"
+    app_name: str = "CreditMate API"
     app_version: str = "0.1.0"
     app_env: str = "development"
     api_prefix: str = "/api/v1"

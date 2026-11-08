@@ -1,4 +1,4 @@
-# JY Credit Assistant — Project Context
+# CreditMate — Project Context
 
 Mobile-first web app that helps people understand, manage and pay down credit card
 debt, and makes credit more accessible. Two developers, hackathon build.
@@ -9,13 +9,13 @@ debt, and makes credit more accessible. Two developers, hackathon build.
 | --- | --- |
 | Backend | Python 3.12+ / FastAPI (`backend/`) |
 | Data + Auth | Supabase (Postgres + Auth, accessed via `supabase-py` / PostgREST) |
-| Frontend | React + Next.js + Tailwind — **phase 2 only** (`frontend/`) |
+| Frontend | React 19 + Next.js 16 + Tailwind v4 (`frontend/`) |
 
 ## Phases
 
-1. **Now — backend only.** Build and stabilise the API contract per section. Do not
-   scaffold or edit frontend code yet.
-2. **Later — frontend.** Next.js app in `frontend/`, wired to the finished API.
+1. **Backend — done.** Each section exposes a stable API contract under `/api/v1`.
+2. **Frontend — in progress.** The Next.js app in `frontend/` is built and wired to
+   the API; keep its screens and the API contract in sync when either changes.
 
 ## Repo map
 
@@ -26,8 +26,15 @@ backend/
   app/main.py                 FastAPI app factory: CORS, /health, mounts every section router
   app/core/                   Shared infrastructure: config, Supabase clients, error types
   app/sections/               One Python package per product section (see table below)
+  scripts/seed_demo.py        Seeds the demo account (cards, transactions, learning)
+  scripts/verify_demo.py      End-to-end smoke test of every endpoint the UI uses
   tests/                      Pytest smoke tests, one file per section
-frontend/                     Phase 2 (placeholder only)
+frontend/
+  src/app/                    Next.js App Router screens (see frontend/README.md)
+  src/components/             layout, charts, ui and per-screen components
+  src/lib/                    api client, finance maths, state providers, formatting
+  scripts/screenshot.py       Playwright pass over every screen
+  design refs/                The screens the UI was built from
 ```
 
 ## Backend sections
@@ -61,6 +68,19 @@ your own section never requires editing `main.py`.
 ```
 
 Docs: `http://127.0.0.1:8000/docs` · Health: `http://127.0.0.1:8000/health`
+
+## Commands (run from `frontend/`)
+
+```powershell
+npm install                      # once
+npm run dev                      # http://localhost:3000 (webpack; see README)
+npm run build                    # production build
+npm run typecheck                # tsc --noEmit
+npm run lint                     # eslint
+```
+
+The frontend needs `frontend/.env.local` (copy `.env.local.example`). Demo login:
+`demo@demo.com` / `demo123!`, seeded by `backend/scripts/seed_demo.py`.
 
 ## Environment
 

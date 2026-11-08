@@ -14,6 +14,7 @@ backend/.env
 .env
 .env.*
 !.env.example
+!.env.local.example
 
 # --- Node / Next.js (phase 2 frontend) ---
 node_modules/
@@ -21,7 +22,6 @@ node_modules/
 out/
 npm-debug.log*
 yarn-error.log*
-
 # --- Supabase CLI ---
 .supabase/
 supabase/.temp/
@@ -34,5 +34,8 @@ Thumbs.db
 
 # --- Local scratch ---
 *.log
+
+# --- Screenshot output (regenerate with frontend/scripts/screenshot.py) ---
+frontend/screenshots/
 
 test_image.jpg

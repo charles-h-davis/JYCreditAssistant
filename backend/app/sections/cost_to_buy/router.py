@@ -9,7 +9,16 @@ the JWT subject and switch to ``get_supabase`` once auth exists.
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    Response,
+    UploadFile,
+    status,
+)
 from supabase import Client
 
 from app.core.database import get_supabase_admin
@@ -138,6 +147,29 @@ def create_purchase_plan(
 ) -> PurchasePlanRead:
     """Store a confirmed purchase and make its payment the current monthly payment."""
     return service.record_purchase_plan(client, user_id=payload.user_id, payload=payload)
+
+
+@router.delete(
+    "/purchase-plans/{plan_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a planned purchase",
+    responses={
+        404: {"description": "No purchase plan with that id belongs to this user."},
+        422: {"description": "Missing or empty user_id."},
+    },
+)
+def delete_purchase_plan(
+    plan_id: str,
+    user_id: str = Query(
+        ...,
+        min_length=1,
+        description="Supabase auth user id (temporary until JWT auth).",
+    ),
+    client: Client = Depends(get_supabase_admin),
+) -> Response:
+    """Remove one planned purchase from the user's list."""
+    service.delete_purchase_plan(client, user_id=user_id, plan_id=plan_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get(

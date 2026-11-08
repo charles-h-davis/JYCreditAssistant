@@ -17,6 +17,7 @@ adjusted payments.
 | POST | `/purchase-impact` | implemented (extra cost of a purchase, stateless) |
 | GET | `/purchase-plans?user_id=` | implemented (DB) |
 | POST | `/purchase-plans` | implemented (confirm: store plan + set payment) |
+| DELETE | `/purchase-plans/{plan_id}?user_id=` | implemented (DB) |
 | GET | `/monthly-payment?user_id=&card_id=` | implemented (DB) |
 | PUT | `/monthly-payment` | implemented (DB, upsert) |
 
@@ -28,12 +29,17 @@ and every repository query filters on `user_id`.
 
 - Money is GBP; APR is a percent (`24.99` = 24.99%).
 - The billing cycle is anchored on **`closing_day`** (the statement-close day): at
-  each close the outstanding balance is multiplied by `APR/12` and the interest is
-  added.
+  each close the payment for the cycle is applied first, then `APR/12` of whatever
+  is **left** is added as interest.
 - The monthly payment is applied on **`statement_day`** (the due day); the payoff
   date is the due date on which the balance reaches zero.
-- There is **no grace period**: a carried balance accrues interest every cycle,
-  including the cycle the new purchase is added in.
+- Paying the balance off **in full** therefore costs no interest and settles the
+  card in a single cycle — which is why the payment slider's maximum (the whole
+  balance) reports "debt free in 1 month".
+- Charging interest on the remaining balance also keeps the maths **monotone**:
+  raising the monthly payment can only ever lower the total cost of an item, never
+  bump it up at a cycle boundary. `test_item_cost_falls_as_the_payment_rises`
+  sweeps the range to guarantee it.
 - The headline number is `extra_total_paid` — total currency paid *with* the
   purchase minus *without* it (this is the item price plus the extra interest). The
   response also reports `extra_interest` and `extra_months`, plus a `scenarios`

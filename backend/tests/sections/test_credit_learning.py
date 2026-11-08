@@ -110,6 +110,12 @@ class FakeRepository:
         wanted = set(lesson_ids)
         return [question for question in self.questions if question["lesson_id"] in wanted]
 
+    def get_question(self, client: Any, *, question_id: str) -> dict[str, Any] | None:
+        return next(
+            (question for question in self.questions if question["id"] == question_id),
+            None,
+        )
+
     # progress
     def get_completion(
         self, client: Any, *, user_id: str, lesson_id: str
@@ -165,6 +171,7 @@ REPOSITORY_FUNCTIONS = (
     "get_lesson_by_slug",
     "list_questions",
     "list_questions_for_lessons",
+    "get_question",
     "get_completion",
     "list_completions",
     "upsert_completion",
@@ -529,3 +536,67 @@ def test_progress_lists_completed_lessons(
     assert body["completions"][0]["lesson_slug"] == "what-credit-is"
     assert body["completions"][0]["best_score"] == 5
     assert body["streak"]["current_streak"] == 1
+
+
+# --- instant answer feedback -------------------------------------------------
+
+
+def test_check_answer_confirms_the_correct_option(
+    client: TestClient, api_prefix: str, store: FakeRepository
+) -> None:
+    answer = _correct_answers("what-credit-is")[0]
+
+    response = client.post(
+        f"{api_prefix}/{SECTION}/questions/{answer['question_id']}/answer",
+        json={"selected_index": answer["selected_index"]},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["correct"] is True
+    assert body["correct_index"] == answer["selected_index"]
+    assert body["explanation"]
+
+
+def test_check_answer_flags_a_wrong_option(
+    client: TestClient, api_prefix: str, store: FakeRepository
+) -> None:
+    answer = _correct_answers("what-credit-is")[0]
+    wrong = (answer["selected_index"] + 1) % 4
+
+    response = client.post(
+        f"{api_prefix}/{SECTION}/questions/{answer['question_id']}/answer",
+        json={"selected_index": wrong},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["correct"] is False
+    assert body["selected_index"] == wrong
+    assert body["correct_index"] == answer["selected_index"]
+
+
+def test_check_answer_404_for_unknown_question(
+    client: TestClient, api_prefix: str, store: FakeRepository
+) -> None:
+    response = client.post(
+        f"{api_prefix}/{SECTION}/questions/does-not-exist/answer",
+        json={"selected_index": 0},
+    )
+
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "not_found"
+
+
+def test_check_answer_rejects_out_of_range_option(
+    client: TestClient, api_prefix: str, store: FakeRepository
+) -> None:
+    answer = _correct_answers("what-credit-is")[0]
+
+    response = client.post(
+        f"{api_prefix}/{SECTION}/questions/{answer['question_id']}/answer",
+        json={"selected_index": 9},
+    )
+
+    assert response.status_code == 422
+

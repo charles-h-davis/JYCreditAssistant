@@ -132,6 +132,26 @@ class AnswerResult(BaseModel):
     explanation: str | None = None
 
 
+class AnswerCheckRequest(BaseModel):
+    """Check one answer without submitting a whole attempt."""
+
+    selected_index: int = Field(..., ge=0, le=3, description="Chosen option index (0-3).")
+
+
+class AnswerCheck(BaseModel):
+    """Immediate feedback for a single question.
+
+    Correct answers are only revealed here — never in a lesson payload — so the
+    learner can only see the answer after committing to one.
+    """
+
+    question_id: str
+    selected_index: int
+    correct_index: int
+    correct: bool
+    explanation: str | None = None
+
+
 class AttemptResult(BaseModel):
     """Result of a graded lesson or recap submission."""
 

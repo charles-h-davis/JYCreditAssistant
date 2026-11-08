@@ -14,6 +14,8 @@ from supabase import Client
 from app.core.database import get_supabase_admin
 from app.sections.credit_learning import service
 from app.sections.credit_learning.schemas import (
+    AnswerCheck,
+    AnswerCheckRequest,
     AttemptResult,
     LessonAttemptRequest,
     LessonDetail,
@@ -75,6 +77,27 @@ def get_lesson(
 ) -> LessonDetail:
     """Return one lesson with its five questions. Correct answers are withheld."""
     return service.get_lesson(client, slug=slug)
+
+
+@router.post(
+    "/questions/{question_id}/answer",
+    response_model=AnswerCheck,
+    summary="Check one answer for instant feedback",
+    responses={404: {"description": "No question with that id."}},
+)
+def check_answer(
+    question_id: str,
+    payload: AnswerCheckRequest,
+    client: Client = Depends(get_supabase_admin),
+) -> AnswerCheck:
+    """Grade a single answer so the lesson runner can react on tap.
+
+    The correct option and explanation are only returned once the learner has
+    committed to an answer — lesson payloads still withhold them.
+    """
+    return service.check_answer(
+        client, question_id=question_id, selected_index=payload.selected_index
+    )
 
 
 @router.post(

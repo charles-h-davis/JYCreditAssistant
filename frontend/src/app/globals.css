@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens — light-mode, Revolut-adjacent, taken from frontend/design refs
+   Pale blue-grey surfaces, near-black navy ink, indigo data accents.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-page: #f5f8fc;
+  --color-surface: #e9eff7;
+  --color-surface-strong: #dbe4f1;
+  --color-halo: #eef3fa;
+  --color-ink: #0b1524;
+  --color-ink-soft: #33445c;
+  --color-muted: #6b7c93;
+  --color-accent: #4c5bd4;
+  --color-accent-soft: #c9d5ea;
+  --color-positive: #1f8f6b;
+  --color-danger: #c2453f;
+
+  --radius-card: 22px;
+  --radius-tile: 18px;
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-soft: 0 10px 30px -18px rgba(11, 21, 36, 0.45);
+  --shadow-lift: 0 18px 40px -22px rgba(11, 21, 36, 0.55);
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    overscroll-behavior-y: none;
+  }
+
+  input,
+  textarea,
+  button,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-muted);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .app-column {
+    width: 100%;
+    max-width: 430px;
+    margin-inline: auto;
+    min-height: 100dvh;
+  }
+
+  .surface {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-card);
+  }
+
+  .surface-strong {
+    background-color: var(--color-surface-strong);
+    border-radius: var(--radius-card);
+  }
+
+  .field {
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid var(--color-ink-soft);
+    border-radius: 16px;
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 52px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition:
+      transform 120ms ease,
+      background-color 160ms ease,
+      opacity 160ms ease;
+  }
+
+  .btn:active {
+    transform: scale(0.985);
+  }
+
+  .btn-primary {
+    background-color: var(--color-ink);
+    color: #fff;
+  }
+
+  .btn-secondary {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--color-ink-soft);
+  }
+
+  .eyebrow {
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--color-muted);
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Range input — matches the "Adjust monthly repayments" control in the refs. */
+  .range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 30px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .range:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .range::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 999px;
+    background: var(--color-surface-strong);
+  }
+
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    margin-top: -11px;
+    border-radius: 50%;
+    background: #8ea3c2;
+    border: none;
+    box-shadow: 0 4px 10px -4px rgba(11, 21, 36, 0.6);
+  }
+
+  .range::-moz-range-track {
+    height: 4px;
+    border-radius: 999px;
+    background: var(--color-surface-strong);
+  }
+
+  .range::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #8ea3c2;
+    border: none;
+    box-shadow: 0 4px 10px -4px rgba(11, 21, 36, 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,63 @@
+We’d like to start frontend work now, so you have permission to work across all directories in this root, if you need add backend content please do so we can run any schema.sql’s where needed, you can also add test data to the demo acount that is reasonable if needed. Could you find some skills related to good mobile design, stylistic design, next js, react, typescript (things you think might be useful for this task), make a list of the skills you think would be best to install. Please ensure you have the ability to screenshot your progress.  
+
+There are several sections to design and implement, most of which have a relevant design reference in the design refs directory. There are some that might need to be made from scratch but for those follow the same consistent style as the rest of the pages. Across the whole we want you to follow the design refs for structure and you can alter the designs slightly to make them more professional, aiming for a revolut app type of style, keep it light mode. 
+
+On every section there will be a navbar at the bottom, use the dashboard design ref for that as the others are not accurate (it should have 5 buttons corresponding to the main sections: dashboard, checker purchase, ai assistant, transaction history and learning), when in a corresponding section it should be highlighted on the navbar subtly. 
+
+On most but not all sections there should also be a user profile button and check a purchase take a photo at the top. Each of these should take the user to the relevant section. On most but not all at the top there should also be a card selection where the user can click on the left or right or swip the whole page to switch between their cards (only for transactions or dashboard) 
+
+The sections are: 
+
+Sign in / create account: 
+
+Allows for sign in to demo user 
+
+Dashboard: 
+
+2 boxes at the top covering current balance/debt on the credit card and Time until debt free (calculated live using balance and APR and monthly repayment). 
+
+Below that a graph section where there are multiple graphs a user can swipe though, the graphs will be: Balance of past 30 days, Spent past 30 days, balance from today until debt free given their monthly repayment and APR, net spending past 30 days. All graphs will be cummulative and have a smooth line, keep the colour matching to the rest of the site style. 
+
+Below that, 2 boxes covering current set monthly repayment and learning streak 
+
+Transactions: 
+
+A container where the user can swipe to see previous and current month transactions, summary at the top, with filter categories (you can scroll on that spot to view more filter categories), you can select one to filter results. 
+
+ 
+
+Learning: 
+
+5 learning activities from the database with 3 tasks for each, progress is shown through the outer segments and once all are done the centre is changed. When a user clicks one of the activities a pop up appears and allows them to start the next lesson, they can redo lessons once all are completed. each lesson should have a relevant icon and at the bottom there is a unique refresh lesson which takes 5 random tasks from all of the users completed tasks. 
+
+The first sectino in a task should show the summary of the lesson and then after confirming it moves to the questions, at the top there is a cross button for them to exit the lesson. 
+
+Your Account: 
+
+Account name 
+
+Card details 
+
+A modifiable monthly repayment which updates the database 
+
+Log out 
+
+ 
+
+Check a purchase – initial screen gives the option to start the actual price valuation, either by adding a photo (go to take a photo/attach) or entering manually (skip straight to the confirmation screen).Below this show all the planned purchases. 
+
+ 
+
+Check a purchase – photo : allow users to take a photo of a price tag or attach screenshot of something they plan to buy, feed into the gemini price and title extractor for next page and populate in next page (confirm details). 
+
+ 
+
+Confirm purchase details: allow users to edit auto populated information or manually enter information if desired. Move to the product cost screen after (titled with “H&M Grey Suit as an example”) 
+
+Total cost with interest: (currently titled “H&M Grey Suit”). Give the product title previously generated, and cost below. Give APR of the user’s credit card (from database). Below is a slider, with the minimum at the user’s current monthly repayment, and the maximum as the total balance (with the new item added as well).   
+
+When the slider is moved this should update the total cost with interest, and “debt free in” fields. Interest is calculated monthly based on the balance after the monthly repayment using the APR. Debt free uses the similar calculation to find when the user will be debt free, if they make the purchase at the sliders monthly repayment. Do calculations for any changes on frontend. If they press add purchase and monthly repayment is altered, save this. If cancelled no need to store anything. 
+
+ 
+
+“Ask Me Anything” - AI chat fed into the gemini chatbot. Take messages and render results. 

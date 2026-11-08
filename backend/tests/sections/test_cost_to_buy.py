@@ -16,6 +16,7 @@ from app.core.database import get_supabase_admin
 from app.main import app
 from app.sections.cost_to_buy import repository, service
 from app.sections.cost_to_buy.gemini_client import get_gemini_client
+from app.sections.cost_to_buy.schemas import PurchaseImpactRequest
 
 SECTION = "cost-to-buy"
 USER_ID = "11111111-1111-1111-1111-111111111111"
@@ -69,6 +70,15 @@ class FakeRepository:
         self.plans[row["id"]] = row
         return row
 
+    def delete_purchase_plan(
+        self, client: Any, *, user_id: str, plan_id: str
+    ) -> bool:
+        row = self.plans.get(plan_id)
+        if row is None or row["user_id"] != user_id:
+            return False
+        del self.plans[plan_id]
+        return True
+
     def get_monthly_payment(
         self, client: Any, *, user_id: str, card_id: str
     ) -> dict[str, Any] | None:
@@ -103,6 +113,7 @@ def store(monkeypatch: pytest.MonkeyPatch) -> FakeRepository:
     for name in (
         "list_purchase_plans",
         "insert_purchase_plan",
+        "delete_purchase_plan",
         "get_monthly_payment",
         "upsert_monthly_payment",
     ):
@@ -289,6 +300,58 @@ def test_amortize_zero_balance_is_immediate() -> None:
     assert summary.total_interest == 0.0
 
 
+def test_amortize_full_payment_settles_in_one_cycle_without_interest() -> None:
+    summary = service.amortize(3000.0, 34.9, 3000.0)
+
+    assert summary.months_to_payoff == 1
+    assert summary.total_interest == 0.0
+    assert summary.total_paid == 3000.0
+
+
+def test_amortize_overpayment_also_settles_in_one_cycle() -> None:
+    summary = service.amortize(3000.0, 34.9, 3500.0)
+
+    assert summary.months_to_payoff == 1
+    assert summary.total_interest == 0.0
+    assert summary.total_paid == 3000.0
+
+
+def test_interest_falls_when_the_payment_rises() -> None:
+    """Every step up in payment must lower the interest, never bump it."""
+    previous = None
+    # Start just above the monthly interest, which is where amortisation is allowed.
+    for payment in range(90, 330, 5):
+        interest = service.amortize(3000.0, 34.9, float(payment)).total_interest
+        if previous is not None:
+            assert interest <= previous + 0.01, f"interest rose at £{payment}"
+        previous = interest
+
+
+def test_item_cost_falls_as_the_payment_rises() -> None:
+    """Regression: the item's total cost must never jump up at a cycle boundary.
+
+    This used to break at the point where the *card without the item* could be
+    cleared in one cycle while the card plus the item still needed two.
+    """
+    balance, apr, price = 784.16, 29.9, 50.0
+    previous = None
+    for payment in range(60, 900, 5):
+        impact = service.purchase_impact(
+            PurchaseImpactRequest(
+                current_balance=balance,
+                purchase_apr=apr,
+                purchase_amount=price,
+                current_monthly_payment=float(payment),
+                closing_day=12,
+                statement_day=5,
+            )
+        )
+        total = round(price + impact.extra_interest, 2)
+        if previous is not None:
+            assert total <= previous + 0.01, f"cost rose at £{payment}: {previous} -> {total}"
+        previous = total
+
+
 def test_amortize_rejects_unpayable_payment() -> None:
     with pytest.raises(ValueError):
         service.amortize(5000.0, 30.0, 50.0)
@@ -378,3 +441,38 @@ def test_put_monthly_payment_roundtrip(
 
     assert get.status_code == 200
     assert get.json()["monthly_payment"] == 200.0
+
+
+def test_delete_purchase_plan_removes_the_row(
+    client: TestClient, api_prefix: str, store: FakeRepository
+) -> None:
+    created = client.post(
+        f"{api_prefix}/{SECTION}/purchase-plans",
+        json={
+            "user_id": USER_ID,
+            "card_id": CARD_ID,
+            "product_name": "Desk lamp",
+            "purchase_amount": 45.0,
+            "monthly_payment": 160.0,
+        },
+    ).json()
+
+    response = client.delete(
+        f"{api_prefix}/{SECTION}/purchase-plans/{created['id']}",
+        params={"user_id": USER_ID},
+    )
+
+    assert response.status_code == 204
+    assert store.plans == {}
+
+
+def test_delete_purchase_plan_404_for_unknown_id(
+    client: TestClient, api_prefix: str, store: FakeRepository
+) -> None:
+    response = client.delete(
+        f"{api_prefix}/{SECTION}/purchase-plans/does-not-exist",
+        params={"user_id": USER_ID},
+    )
+
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "not_found"

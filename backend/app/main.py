@@ -1,4 +1,4 @@
-"""FastAPI application factory for the JY Credit Assistant API.
+"""FastAPI application factory for the CreditMate API.
 
 Lead-owned: section owners do not need to edit this file. Section routers are
 discovered from `app.sections` and mounted automatically under the API prefix.
@@ -23,7 +23,7 @@ def create_app() -> FastAPI:
         title=settings.app_name,
         version=settings.app_version,
         description=(
-            "Backend for JY Credit Assistant — cost-to-buy planning, credit learning, "
+            "Backend for CreditMate — cost-to-buy planning, credit learning, "
             "card storage and AI credit guidance."
         ),
     )

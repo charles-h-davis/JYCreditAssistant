@@ -21,6 +21,7 @@ from supabase import Client
 from app.core.exceptions import AppError, ConflictError, NotFoundError
 from app.sections.credit_learning import repository
 from app.sections.credit_learning.schemas import (
+    AnswerCheck,
     AnswerIn,
     AnswerResult,
     AttemptResult,
@@ -128,6 +129,32 @@ def grade_answers(
             )
         )
     return score, results
+
+
+def check_answer(
+    client: Client, *, question_id: str, selected_index: int
+) -> AnswerCheck:
+    """Grade a single answer so the UI can give feedback immediately.
+
+    Reuses :func:`grade_answers` so the per-question verdict always matches the
+    final attempt score.
+    """
+    question = repository.get_question(client, question_id=question_id)
+    if question is None:
+        raise NotFoundError(f"No question with id '{question_id}'.")
+
+    _, results = grade_answers(
+        [question],
+        [AnswerIn(question_id=question_id, selected_index=selected_index)],
+    )
+    result = results[0]
+    return AnswerCheck(
+        question_id=result.question_id,
+        selected_index=result.selected_index,
+        correct_index=result.correct_index,
+        correct=result.correct,
+        explanation=result.explanation,
+    )
 
 
 def pick_recap_questions(

@@ -129,9 +129,15 @@ def amortize(
 ) -> PayoffSummary:
     """Amortise `balance` at `purchase_apr`, paying `monthly_payment` per cycle.
 
-    Interest is posted at the statement close (``closing_day``) and the payment is
-    applied at the due day (``statement_day``); ``payoff_date`` is the due date on
-    which the balance reaches zero (needs ``statement_day``).
+    Interest is posted at the statement close (``closing_day``) on whatever is left
+    after the payment, and the payment is applied at the due day
+    (``statement_day``); ``payoff_date`` is the due date on which the balance
+    reaches zero (needs ``statement_day``).
+
+    Interest on the *remaining* balance (rather than on the whole balance before
+    the payment) is what makes paying a card off in full cost nothing in interest,
+    and it keeps the curve continuous: raising the payment can only ever lower the
+    total interest, never bump it up a cycle boundary.
     """
     if balance <= 0:
         return PayoffSummary(
@@ -139,6 +145,17 @@ def amortize(
         )
     if monthly_payment <= 0:
         raise ValueError("monthly_payment must be greater than zero.")
+
+    if monthly_payment >= balance:
+        # Clearing the balance in full settles it that cycle: no further interest.
+        return PayoffSummary(
+            months_to_payoff=1,
+            total_interest=0.0,
+            total_paid=_round(float(balance)),
+            payoff_date=_payoff_date(
+                start_date or date.today(), 1, closing_day, statement_day
+            ),
+        )
 
     rate = monthly_rate(purchase_apr)
     if rate > 0 and monthly_payment <= balance * rate:
@@ -152,11 +169,13 @@ def amortize(
 
     while outstanding > 0 and cycles < max_cycles:
         cycles += 1
-        interest = outstanding * rate
-        outstanding += interest
+        if monthly_payment >= outstanding:
+            outstanding = 0.0
+            break
+        remaining = outstanding - monthly_payment
+        interest = remaining * rate
         total_interest += interest
-        payment = min(monthly_payment, outstanding)
-        outstanding -= payment
+        outstanding = remaining + interest
         if outstanding < 0.005:  # guard against float dust leaving a penny behind
             outstanding = 0.0
 
@@ -337,6 +356,12 @@ def record_purchase_plan(
         monthly_payment=payload.monthly_payment,
     )
     return PurchasePlanRead.model_validate(row)
+
+
+def delete_purchase_plan(client: Client, *, user_id: str, plan_id: str) -> None:
+    """Delete one of the user's planned purchases, or raise NotFoundError."""
+    if not repository.delete_purchase_plan(client, user_id=user_id, plan_id=plan_id):
+        raise NotFoundError("No purchase plan with that id belongs to this user.")
 
 
 def get_monthly_payment(

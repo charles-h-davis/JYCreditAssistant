@@ -41,6 +41,18 @@ def insert_purchase_plan(
     return rows[0] if rows else row
 
 
+def delete_purchase_plan(client: Client, *, user_id: str, plan_id: str) -> bool:
+    """Delete one plan owned by `user_id`; return True when a row was removed."""
+    response = (
+        client.table(PURCHASE_PLANS_TABLE)
+        .delete()
+        .eq("id", plan_id)
+        .eq("user_id", user_id)
+        .execute()
+    )
+    return bool(response.data)
+
+
 def get_monthly_payment(
     client: Client, *, user_id: str, card_id: str
 ) -> dict[str, Any] | None:

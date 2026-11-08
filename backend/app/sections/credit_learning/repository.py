@@ -70,6 +70,19 @@ def list_questions(
     return response.data or []
 
 
+def get_question(client: Client, *, question_id: str) -> dict[str, Any] | None:
+    """Return one question row (including its correct answer), or None."""
+    response = (
+        client.table(QUESTIONS_TABLE)
+        .select("*")
+        .eq("id", question_id)
+        .limit(1)
+        .execute()
+    )
+    rows = response.data or []
+    return rows[0] if rows else None
+
+
 def list_questions_for_lessons(
     client: Client, *, lesson_ids: list[str]
 ) -> list[dict[str, Any]]:

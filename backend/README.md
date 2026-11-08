@@ -1,6 +1,6 @@
-# JY Credit Assistant — Backend
+# CreditMate — Backend
 
-FastAPI service for JY Credit Assistant. Phase 1 of the project: the API is built
+FastAPI service for CreditMate. Phase 1 of the project: the API is built
 section by section, then the Next.js frontend is wired up to it.
 
 ## Quickstart

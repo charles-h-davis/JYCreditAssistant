@@ -4,6 +4,12 @@ Sections raise these from their service layer instead of `HTTPException`, so the
 same error shape is returned by every endpoint::
 
     {"error": {"code": "not_found", "message": "..."}}
+
+Database failures from ``postgrest`` are mapped here too. That matters for more
+than tidiness: an unhandled exception is turned into a 500 by Starlette *outside*
+the CORS middleware, so the browser sees an opaque "blocked by CORS policy" error
+instead of the real problem. Handling them inside the exception middleware keeps
+the CORS headers (and the message readable).
 """
 
 from fastapi import FastAPI, Request, status
@@ -49,6 +55,30 @@ class UpstreamServiceError(AppError):
     message = "An upstream service (database or model provider) failed."
 
 
+class DatabaseNotReadyError(AppError):
+    """A table the endpoint needs has not been created yet (PGRST205)."""
+
+    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    code = "database_not_ready"
+    message = (
+        "This feature's database tables haven't been created yet. Run the matching "
+        "schema.sql from backend/app/sections/ in the Supabase SQL editor."
+    )
+
+
+def _postgrest_code(exc: Exception) -> str | None:
+    """Best-effort read of PostgREST's error code from an ``APIError``."""
+    code = getattr(exc, "code", None)
+    if isinstance(code, str):
+        return code
+    args = getattr(exc, "args", ())
+    if args and isinstance(args[0], dict):
+        candidate = args[0].get("code")
+        if isinstance(candidate, str):
+            return candidate
+    return None
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     """Attach the `AppError` handler so all sections return the same error JSON."""
 
@@ -58,3 +88,33 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=exc.status_code,
             content={"error": {"code": exc.code, "message": exc.message}},
         )
+
+    try:
+        from postgrest.exceptions import APIError as PostgrestAPIError
+    except ImportError:  # pragma: no cover - postgrest ships with supabase-py
+        return
+
+    @app.exception_handler(PostgrestAPIError)
+    async def _handle_postgrest_error(
+        _request: Request, exc: PostgrestAPIError
+    ) -> JSONResponse:
+        if _postgrest_code(exc) == "PGRST205":
+            return JSONResponse(
+                status_code=DatabaseNotReadyError.status_code,
+                content={
+                    "error": {
+                        "code": DatabaseNotReadyError.code,
+                        "message": DatabaseNotReadyError.message,
+                    }
+                },
+            )
+        return JSONResponse(
+            status_code=UpstreamServiceError.status_code,
+            content={
+                "error": {
+                    "code": UpstreamServiceError.code,
+                    "message": "The database rejected the request.",
+                }
+            },
+        )
+
