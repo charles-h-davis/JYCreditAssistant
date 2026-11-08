@@ -1,7 +1,7 @@
 # CreditMate
 
 A mobile-first web app that helps people understand, manage and pay down credit card
-debt — and makes credit less intimidating to get into.
+debt — and makes credit less intimidating to get into..
 
 ## Stack
 
