@@ -1,0 +1,1 @@
+Do not add vercel connections for the directory web_extension/

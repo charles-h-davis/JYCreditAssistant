@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "CreditMate — Cost to Buy",
+  "version": "0.2.0",
+  "description": "Read the price of the item you're viewing with Gemini and see what it really costs on your card.",
+  "action": {
+    "default_title": "CreditMate — Cost to Buy",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "http://127.0.0.1:8000/*",
+    "https://*.supabase.co/*"
+  ]
+}

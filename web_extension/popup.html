@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cost to Buy</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="head">
+      <h1>Cost to Buy</h1>
+      <button id="options" class="link" type="button">Card settings</button>
+    </header>
+
+    <p id="card-label" class="note card-label" hidden></p>
+
+    <section id="product" class="product" hidden>
+      <p id="product-name" class="product-name" hidden></p>
+      <p id="price-row" class="price-row" hidden>
+        <span id="price" class="price"></span>
+        <span id="source" class="badge"></span>
+      </p>
+      <p id="currency-note" class="note" hidden></p>
+    </section>
+
+    <p id="status" class="status" hidden></p>
+
+    <section id="calc" hidden>
+      <div class="row">
+        <span class="label">Cost today</span>
+        <span id="cost-today" class="value"></span>
+        <span class="label">APR</span>
+        <span id="apr" class="value"></span>
+      </div>
+
+      <p class="label">Adjust monthly repayments</p>
+      <input id="slider" class="range" type="range" step="5" aria-label="Monthly repayment" />
+      <div class="range-ends">
+        <span id="min-label"></span>
+        <span id="max-label"></span>
+      </div>
+      <p class="monthly"><span id="monthly"></span><span class="per">/month</span></p>
+
+      <p class="label">Total cost with interest</p>
+      <p id="real-cost" class="headline"></p>
+
+      <p class="label">Debt free in</p>
+      <p id="debt-free" class="months"></p>
+      <p id="extra-interest" class="note"></p>
+
+      <p id="not-payable" class="error" hidden>
+        That payment doesn&apos;t cover the monthly interest, so the balance would never
+        clear. Raise the slider.
+      </p>
+
+      <p id="save-hint" class="note" hidden></p>
+      <div class="btns">
+        <button id="save-plan" class="btn primary" type="button" disabled>
+          Add to planned purchases
+        </button>
+        <button id="reread" class="btn" type="button">Re-read page</button>
+      </div>
+      <p id="plan-status" class="note" hidden></p>
+    </section>
+
+    <section id="confirmation" class="confirm" hidden>
+      <div class="confirm-inner">
+        <div class="confirm-check" aria-hidden="true">&#10003;</div>
+        <h2 class="confirm-title">Added to planned purchases</h2>
+        <p id="confirm-name" class="confirm-name"></p>
+        <dl class="confirm-list">
+          <div><dt>Price</dt><dd id="confirm-price"></dd></div>
+          <div><dt>Total cost with interest</dt><dd id="confirm-real-cost"></dd></div>
+          <div><dt>Extra interest</dt><dd id="confirm-extra"></dd></div>
+          <div><dt>Monthly repayment</dt><dd id="confirm-monthly"></dd></div>
+          <div><dt>Debt free in</dt><dd id="confirm-debt-free"></dd></div>
+          <div><dt>Card</dt><dd id="confirm-card"></dd></div>
+        </dl>
+        <button id="confirm-close" class="btn primary" type="button">Close</button>
+      </div>
+    </section>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

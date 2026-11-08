@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CreditMate — Settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <h1>CreditMate settings</h1>
+      <p class="hint">
+        Connect to your Supabase project and sign in so the extension can read your
+        real cards. Values are stored in this browser only; the anon key is public by
+        design.
+      </p>
+
+      <section class="card">
+        <h2>1. Connection</h2>
+        <label>
+          Supabase URL
+          <input id="supabase-url" type="url" placeholder="https://xxxx.supabase.co" />
+        </label>
+        <label>
+          Supabase anon key
+          <input id="supabase-anon" type="password" placeholder="eyJhbGciOi..." />
+        </label>
+        <label>
+          Backend base URL
+          <input id="backend-url" type="url" placeholder="http://127.0.0.1:8000/api/v1" />
+        </label>
+        <div class="actions">
+          <button id="save-connection" class="primary" type="button">Save connection</button>
+        </div>
+        <p id="connection-saved" class="ok" hidden>Saved.</p>
+      </section>
+
+      <section class="card">
+        <h2>2. Account</h2>
+        <p id="account-status" class="hint">Not signed in.</p>
+        <div id="signin-form">
+          <label> Email <input id="email" type="email" autocomplete="username" /> </label>
+          <label>
+            Password
+            <input id="password" type="password" autocomplete="current-password" />
+          </label>
+          <div class="actions">
+            <button id="signin" class="primary" type="button">Sign in</button>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="signout" class="ghost" type="button" hidden>Sign out</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3. Card</h2>
+        <div class="actions">
+          <button id="refresh-cards" class="ghost" type="button">Refresh cards</button>
+        </div>
+        <label>
+          Use this card
+          <select id="card-select" disabled>
+            <option value="">Sign in first</option>
+          </select>
+        </label>
+        <p id="card-summary" class="summary" hidden></p>
+      </section>
+
+      <section class="card">
+        <h2>Manual fallback (optional)</h2>
+        <p class="hint">Only used if the backend is unreachable.</p>
+        <div class="grid">
+          <label>Balance (£)<input id="m-balance" type="number" min="0" step="0.01" /></label>
+          <label>APR (%)<input id="m-apr" type="number" min="0" max="100" step="0.01" /></label>
+          <label>
+            Monthly payment (£)
+            <input id="m-payment" type="number" min="0" step="0.01" />
+          </label>
+        </div>
+        <div class="actions">
+          <button id="save-manual" class="ghost" type="button">Save fallback</button>
+        </div>
+        <p id="manual-saved" class="ok" hidden>Saved.</p>
+      </section>
+
+      <p id="error" class="error" hidden></p>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

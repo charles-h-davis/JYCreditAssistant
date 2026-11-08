@@ -1,0 +1,274 @@
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 360px;
+  margin: 0;
+  padding: 16px;
+  font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #2563eb;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.product {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.product-name {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.3;
+  color: #475569;
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.badge {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.status {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: #b45309;
+}
+
+#calc {
+  margin-top: 14px;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.label {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.range {
+  width: 100%;
+  margin: 10px 0 4px;
+  accent-color: #2563eb;
+}
+
+.range-ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.monthly {
+  margin: 10px 0;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.per {
+  margin-left: 2px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #94a3b8;
+}
+
+.headline {
+  margin: 2px 0 14px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.months {
+  margin: 2px 0 6px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.error {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 12px;
+}
+
+.btns {
+  margin-top: 14px;
+}
+
+.btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #f8fafc;
+}
+
+.card-label {
+  margin-top: 8px;
+}
+
+.btn + .btn {
+  margin-top: 8px;
+}
+
+.btn.primary {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.btn.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.note.error-text {
+  color: #b91c1c;
+}
+
+.confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #f8fafc;
+}
+
+.confirm[hidden] {
+  display: none;
+}
+
+.confirm-inner {
+  width: 100%;
+  text-align: center;
+}
+
+.confirm-check {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.confirm-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.confirm-name {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.3;
+  color: #475569;
+}
+
+.confirm-list {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  text-align: left;
+}
+
+.confirm-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.confirm-list dt {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.confirm-list dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+
