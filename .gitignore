@@ -16,6 +16,9 @@ backend/.env
 !.env.example
 !.env.local.example
 
+# --- Vercel (created by `vercel link`) ---
+.vercel/
+
 # --- Node / Next.js (phase 2 frontend) ---
 node_modules/
 .next/

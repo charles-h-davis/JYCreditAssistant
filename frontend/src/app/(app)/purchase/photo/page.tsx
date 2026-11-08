@@ -1,13 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Camera, ImagePlus, X } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { TopBar } from "@/components/layout/top-bar";
 import { Button } from "@/components/ui/button";
 import { ErrorNote } from "@/components/ui/primitives";
+import { ApiError } from "@/lib/api/client";
 import { extractProduct } from "@/lib/api/endpoints";
+import { prepareImageForUpload } from "@/lib/images";
 import { useCards } from "@/lib/state/cards";
 import { usePurchaseDraft } from "@/lib/state/purchase-draft";
 
@@ -25,14 +27,37 @@ export default function PurchasePhotoPage() {
 
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [preparing, setPreparing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const previewUrl = useRef<string | null>(null);
 
-  function onPick(picked: File | null) {
+  // Object URLs live until the page goes away; free the last one on unmount.
+  useEffect(() => {
+    return () => {
+      if (previewUrl.current) URL.revokeObjectURL(previewUrl.current);
+    };
+  }, []);
+
+  async function onPick(picked: File | null) {
     if (!picked) return;
     setError(null);
-    setFile(picked);
-    setPreview(URL.createObjectURL(picked));
+
+    const url = URL.createObjectURL(picked);
+    previewUrl.current = url;
+    setPreview(url);
+
+    // Shrink before upload: a Vercel Function refuses bodies over 4.5 MB, and a
+    // phone photo is routinely larger than that. See `@/lib/images`.
+    setFile(null);
+    setPreparing(true);
+    try {
+      setFile(await prepareImageForUpload(picked));
+    } catch {
+      setFile(picked);
+    } finally {
+      setPreparing(false);
+    }
   }
 
   async function analyse() {
@@ -55,9 +80,11 @@ export default function PurchasePhotoPage() {
       router.push("/purchase/details");
     } catch (caught) {
       setError(
-        caught instanceof Error
-          ? caught.message
-          : "Couldn't read that photo. Enter the details manually instead.",
+        caught instanceof ApiError && caught.status === 413
+          ? "That photo is too big to upload. Try a smaller one, or enter the details manually."
+          : caught instanceof Error
+            ? caught.message
+            : "Couldn't read that photo. Enter the details manually instead.",
       );
     } finally {
       setBusy(false);
@@ -141,10 +168,14 @@ export default function PurchasePhotoPage() {
         <Button
           className="w-full"
           onClick={analyse}
-          loading={busy}
-          disabled={!file}
+          loading={busy || preparing}
+          disabled={!file || preparing}
         >
-          {file ? "Read the price" : "Choose a photo first"}
+          {preparing
+            ? "Preparing photo…"
+            : file
+              ? "Read the price"
+              : "Choose a photo first"}
         </Button>
         <Button
           variant="secondary"

@@ -58,7 +58,9 @@ export async function apiRequest<T>(
     });
   } catch {
     throw new ApiError(
-      "Can't reach the API. Is the backend running on port 8000?",
+      process.env.NODE_ENV === "production"
+        ? "Can't reach the API. Check your connection and try again."
+        : "Can't reach the API. Is the backend running on port 8000?",
       0,
       "network_error",
     );

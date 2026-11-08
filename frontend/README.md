@@ -32,6 +32,10 @@ Demo login: `demo@demo.com` / `demo123!` (the sign-in screen has a one-tap butto
 > **Turbopack:** this machine only has Turbopack's WASM bindings, so `dev`/`build`
 > pass `--webpack`. Drop the flag on a platform with native Turbopack support.
 
+> **Deployed API URL:** in a production build the app talks to the same-origin
+> `/api/v1` instead of `http://127.0.0.1:8000/api/v1` — the root `vercel.json` rewrites
+> `/api/(.*)` to the `backend` service. See the deployment section of the repo README.
+
 ## Scripts
 
 ```powershell
