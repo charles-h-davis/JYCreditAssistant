@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Camera } from "lucide-react";
 import { IconButton } from "@/components/ui/primitives";
 import { initials } from "@/lib/format";
@@ -10,13 +11,18 @@ import { useSession } from "@/lib/state/session";
  * The top row from the design refs: profile avatar on the left, the "check a
  * purchase" camera on the right. There is no "+" button — the bottom nav's
  * Check Purchase tab is the single way into that flow.
+ *
+ * `notifications` is an optional slot rendered next to the camera; today only the
+ * dashboard passes it (the bell).
  */
 export function TopBar({
   showProfile = true,
   showCamera = true,
+  notifications,
 }: {
   showProfile?: boolean;
   showCamera?: boolean;
+  notifications?: ReactNode;
 }) {
   const { displayName } = useSession();
 
@@ -34,15 +40,21 @@ export function TopBar({
         <span aria-hidden className="size-11" />
       )}
 
-      {showCamera ? (
-        <Link href="/purchase/photo" aria-label="Check a purchase with a photo">
-          <IconButton label="Check a purchase with a photo" tabIndex={-1}>
-            <Camera size={20} strokeWidth={1.9} aria-hidden />
-          </IconButton>
-        </Link>
+      {notifications || showCamera ? (
+        <div className="flex items-center gap-2">
+          {notifications}
+          {showCamera ? (
+            <Link href="/purchase/photo" aria-label="Check a purchase with a photo">
+              <IconButton label="Check a purchase with a photo" tabIndex={-1}>
+                <Camera size={20} strokeWidth={1.9} aria-hidden />
+              </IconButton>
+            </Link>
+          ) : null}
+        </div>
       ) : (
         <span aria-hidden className="size-11" />
       )}
     </header>
   );
 }
+

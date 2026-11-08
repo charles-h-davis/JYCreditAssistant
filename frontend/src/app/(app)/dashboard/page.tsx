@@ -10,6 +10,7 @@ import { RepaymentEditor } from "@/components/dashboard/repayment-editor";
 import { AppShell } from "@/components/layout/app-shell";
 import { CardSwitcher } from "@/components/layout/card-switcher";
 import { TopBar } from "@/components/layout/top-bar";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import { EmptyState, ErrorNote, Skeleton, StatTile } from "@/components/ui/primitives";
 import { getMonthlyPayment, getRoadmap, listCardTransactions } from "@/lib/api/endpoints";
 import {
@@ -188,7 +189,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <TopBar />
+      <TopBar notifications={<NotificationBell />} />
       <div className="mt-4">
         <CardSwitcher />
       </div>

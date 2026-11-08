@@ -217,6 +217,7 @@ def _clear_demo_rows(client: Client, user_id: str) -> None:
         "learning_streaks",
         "friends",
         "friends_feed_entries",
+        "purchase_match_dismissals",
     ):
         try:
             client.table(table).delete().eq("user_id", user_id).execute()

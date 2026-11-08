@@ -30,7 +30,8 @@ Demo login: `demo@demo.com` / `demo123!` (the sign-in screen has a one-tap butto
 > the API error. The same applies to the social feature — run
 > `backend/app/sections/friends_feed/schema.sql` (feed) and
 > `backend/app/sections/friends/schema.sql` (friend list), then
-> `python -m app.sections.friends.seed` to load the demo friends.
+> `python -m app.sections.friends.seed` to load the demo friends. The dashboard's
+> notification bell needs `backend/app/sections/notifications/schema.sql`.
 
 > **Turbopack:** this machine only has Turbopack's WASM bindings, so `dev`/`build`
 > pass `--webpack`. Drop the flag on a platform with native Turbopack support.

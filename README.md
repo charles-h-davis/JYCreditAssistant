@@ -22,7 +22,7 @@ API, following the screens in `frontend/design refs/`.
 | Screen | Route | API |
 | --- | --- | --- |
 | Sign in / create account | `/sign-in` | Supabase Auth |
-| Dashboard | `/dashboard` | card-storage, cost-to-buy, credit-learning |
+| Dashboard | `/dashboard` | card-storage, cost-to-buy, credit-learning, notifications |
 | Transactions | `/transactions` | card-storage |
 | Learning | `/learning` | credit-learning |
 | Friends feed | `/friends-feed` | friends-feed |
@@ -39,6 +39,7 @@ API, following the screens in `frontend/design refs/`.
 | AI Credit Assistant | `/api/v1/ai-assistant` | _fill in_ |
 | Friends | `/api/v1/friends` | _fill in_ |
 | Friends Feed | `/api/v1/friends-feed` | _fill in_ |
+| Notifications | `/api/v1/notifications` | _fill in_ |
 
 ## Get started
 

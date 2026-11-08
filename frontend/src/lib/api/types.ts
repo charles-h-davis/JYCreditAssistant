@@ -165,6 +165,33 @@ export interface ChatReply {
   model: string | null;
 }
 
+/* --- notifications --------------------------------------------------------- */
+
+/** A card transaction that looks like a planned purchase the user has made. */
+export interface PurchaseMatch {
+  id: string;
+  plan_id: string;
+  transaction_id: string;
+  card_id: string;
+  product_name: string | null;
+  amount: number;
+  merchant_name: string | null;
+  transaction_date: string;
+  planned_at: string;
+}
+
+export interface NotificationsFeed {
+  count: number;
+  matches: PurchaseMatch[];
+}
+
+/** Body of `POST /notifications/dismissals` — the ✗ answer for one match. */
+export interface DismissalCreate {
+  user_id: string;
+  plan_id: string;
+  transaction_id: string;
+}
+
 /* --- friends --------------------------------------------------------------- */
 
 /** One friend on the user's list (`GET /friends`). A contact, not an account. */

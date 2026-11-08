@@ -5,6 +5,7 @@ import type {
   CardTransaction,
   ChatReply,
   CreditCard,
+  DismissalCreate,
   ExtractResult,
   FeedEntry,
   FeedEntryCreate,
@@ -13,6 +14,7 @@ import type {
   FriendsFeed,
   LessonDetail,
   MonthlyPayment,
+  NotificationsFeed,
   PurchasePlan,
   PurchasePlanCreate,
   Recap,
@@ -136,6 +138,21 @@ export function askAssistant(message: string): Promise<ChatReply> {
   return apiRequest<ChatReply>("/ai-assistant/chat", {
     method: "POST",
     json: { message },
+  });
+}
+
+/* --- notifications --------------------------------------------------------- */
+
+/** Planned purchases that look like they have already been bought. */
+export function getNotifications(userId: string): Promise<NotificationsFeed> {
+  return apiRequest<NotificationsFeed>(withUser("/notifications", userId));
+}
+
+/** Answer ✗: keep the planned purchase, stop notifying about this pair. */
+export function dismissPurchaseMatch(payload: DismissalCreate): Promise<void> {
+  return apiRequest<void>("/notifications/dismissals", {
+    method: "POST",
+    json: payload,
   });
 }
 
